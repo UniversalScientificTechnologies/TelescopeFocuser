@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import __init__
+import rospy
+import time
+import std_msgs
+import socket
+
+from arom_tools import AromNode
+
+class tefo01b(AromNode):
+    node_name = "TEFO01B"
+    node_type = "TEFO01B"
+    node_pymlab = True
+
+    def __init__(self):
+
+        AromNode.__init__(self)
+
+        sock = socket.socket(socket.AF_INET, # Internet
+                          socket.SOCK_DGRAM)
+
+        rate = rospy.Rate(10)
+        while not rospy.is_shutdown():
+            rate.sleep()
+
+
+if __name__ == '__main__':
+    tefo = tefo01b()
