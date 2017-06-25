@@ -1,2 +1,4 @@
 # TelescopeFocuser
-Telescope foruser - TEFO01B
+Telescope focuser - TEFO01B
+
+
