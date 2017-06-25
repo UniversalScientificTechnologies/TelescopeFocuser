@@ -1,0 +1,2 @@
+﻿Box derived from BASEBOX01A
+Intended for motor part of TEFO01B  with HBSTEP01B, I2CSPI01A,I2CDIFF01A modules
