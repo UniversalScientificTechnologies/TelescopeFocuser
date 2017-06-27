@@ -85,7 +85,7 @@ class focuser():
                     target = float(data[1:])
                     self.target = target
                     if target > 1000: target = 1000
-                    if target < 0: target = 0
+                    if target < 10: target = 10
                     move = int(tefo_conf['tefo']['lenght']*target/1000)
                     self.motor.GoTo(move, wait=True)
                     self.motor.wait()
@@ -98,7 +98,7 @@ class focuser():
 
                 elif data[0] == 'S':
                     miss = self.is_misscalibrated()
-                    self.sock.sendto("%s;%s\n\r" %(miss, tefo_conf['tefo']['lenght']/self.target*1000), addr)
+                    self.sock.sendto("%s;%s\n\r" %(miss, self.target), addr)
                 else:
                     print "neznamy prikaz"
 
@@ -117,16 +117,21 @@ class focuser():
     def calib(self):
         print "Zacatek kalibrace"
         #self.motor.MoveWait(-1000)
+        self.motor.MaxSpeed(self.tefo_conf['tefo']['home_speed'])
+        self.motor.MoveWait(self.tefo_conf['tefo']['lenght']*-0.1)
         self.motor.MoveWait(self.tefo_conf['tefo']['lenght']*1.2)
         time.sleep(0.5)
         self.motor.Float()
         self.motor.ResetPos()
-        self.target = self.tefo_conf['tefo']['home']
+        self.motor.MaxSpeed(self.tefo_conf['tefo']['speed'])
+        self.target = self.tefo_conf['tefo']['home']/self.tefo_conf['tefo']['lenght']*1000
+        self.target = 500
         self.motor.GoTo(self.tefo_conf['tefo']['home'], wait=True)
         self.motor.wait()
         self.motor.GoTo(self.tefo_conf['tefo']['home'], wait=True)
         self.motor.wait()
         self.motor.Float()
+        #self.motor.MaxSpeed(self.tefo_conf['tefo']['speed'])
         self.last_pos = self.sensor.get_angle(verify = True)
         print "konec kalibrace", self.last_pos
 
