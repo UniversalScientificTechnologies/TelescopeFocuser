@@ -17,13 +17,29 @@ class tefo01b(AromNode):
     def __init__(self):
 
         AromNode.__init__(self)
+        self.set_feature('sendNum',{'addr': "/TEFO/pos", "name": "Abs position", 'min':0, 'max': 1000})  #tady se nastaví "feature" pro webove rozhrani (tedy jaky ovladaci prvek se zobrazi)
 
-        sock = socket.socket(socket.AF_INET, # Internet
-                          socket.SOCK_DGRAM)
+        rospy.Subscriber("/TEFO/pos", std_msgs.msg.String, self.callback)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.connect(('192.168.1.202', 5000))
+        self.sock.setblocking(0)
+        #self.sock.setblocking(0)
+        self.server_address = ('192.168.1.202', 5000)
+
 
         rate = rospy.Rate(10)
         while not rospy.is_shutdown():
+            try:
+                data = self.sock.recv(512)
+                print data
+            except Exception, e:
+                pass
+
             rate.sleep()
+
+    def callback(self, data):
+        print data.data
+        self.sock.send("M%s" %data.data)
 
 
 if __name__ == '__main__':

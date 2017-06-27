@@ -1,7 +1,9 @@
 {
 	"pymlab":{
 		"i2c":{
-            "port": 1
+            "port": 1,
+        	"device": "hid",
+        	"serial_number": "003347BC"
         },
         "bus": [
             { 
