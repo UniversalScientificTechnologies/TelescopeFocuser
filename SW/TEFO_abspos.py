@@ -74,10 +74,10 @@ class focuser():
 
             if data:
                 miss = self.is_misscalibrated()
-                if data[:2] == 'MH' :
+                if data[:2] == 'H' :
                     self.motor.GoTo(self.tefo_conf['tefo']['home'], wait=True)
                     self.motor.wait()
-                    self.sock.sendto("Home, miss: %s\n\r" %(miss), addr)
+                    self.sock.sendto("Home; Miss:%s\n\r" %(miss), addr)
                     self.last_pos = self.sensor.get_angle(verify = False)
                     self.motor.Float()
 
@@ -89,7 +89,7 @@ class focuser():
                     move = int(tefo_conf['tefo']['lenght']*target/1000)
                     self.motor.GoTo(move, wait=True)
                     self.motor.wait()
-                    self.sock.sendto("NewPositios, miss: %s\n\r" %(miss), addr)
+                    self.sock.sendto("Move;Miss:%s\n\r" %(miss), addr)
                     self.last_pos = self.sensor.get_angle(verify = False)
                     self.motor.Float()
 
@@ -98,7 +98,7 @@ class focuser():
 
                 elif data[0] == 'S':
                     miss = self.is_misscalibrated()
-                    self.sock.sendto("%s,%s\n\r" %(miss, tefo_conf['tefo']['lenght']*self.target/1000), addr)
+                    self.sock.sendto("%s;%s\n\r" %(miss, tefo_conf['tefo']['lenght']/self.target*1000), addr)
                 else:
                     print "neznamy prikaz"
 
