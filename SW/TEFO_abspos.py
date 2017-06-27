@@ -80,12 +80,20 @@ class focuser():
                     self.sock.sendto("Home; Miss:%s\n\r" %(miss), addr)
                     self.last_pos = self.sensor.get_angle(verify = False)
                     self.motor.Float()
+                
+                elif 'CM' in data:
+                    target = float(data[2:])
+                    if target > 1000: target = 1000
+                    if target < 10: target = 10
+                    self.calib(target)
+                    self.target = target
+                    self.sock.sendto("CalibMove; Miss:%s\n\r" %(miss), addr)
 
                 elif data[0] == 'M':
                     target = float(data[1:])
-                    self.target = target
                     if target > 1000: target = 1000
                     if target < 10: target = 10
+                    self.target = target
                     move = int(tefo_conf['tefo']['lenght']*target/1000)
                     self.motor.GoTo(move, wait=True)
                     self.motor.wait()
@@ -108,27 +116,33 @@ class focuser():
         print self.last_pos
         print self.sensor.get_angle(verify = False)
         diff = abs(float(self.last_pos) - self.sensor.get_angle(verify = False))
-        if diff < 1:
+        if diff < 5:
             return False
         else:
             return diff
 
 
-    def calib(self):
+    def calib(self, pos = None):
         print "Zacatek kalibrace"
         #self.motor.MoveWait(-1000)
+        if not pos:
+            pos = self.tefo_conf['tefo']['home']
+            #pos = int(tefo_conf['tefo']['lenght']*target/1000)
+        else:
+            self.target = int(pos)
+            pos = int(self.tefo_conf['tefo']['lenght']*pos/1000)
         self.motor.MaxSpeed(self.tefo_conf['tefo']['home_speed'])
-        self.motor.MoveWait(self.tefo_conf['tefo']['lenght']*-0.1)
-        self.motor.MoveWait(self.tefo_conf['tefo']['lenght']*1.2)
+        self.motor.MoveWait(pos*-0.1)
+        self.motor.MoveWait(pos*2)
         time.sleep(0.5)
         self.motor.Float()
         self.motor.ResetPos()
         self.motor.MaxSpeed(self.tefo_conf['tefo']['speed'])
-        self.target = self.tefo_conf['tefo']['home']/self.tefo_conf['tefo']['lenght']*1000
-        self.target = 500
-        self.motor.GoTo(self.tefo_conf['tefo']['home'], wait=True)
+        #self.target = self.tefo_conf['tefo']['home']/self.tefo_conf['tefo']['lenght']*1000
+        #self.target = pos
+        self.motor.GoTo(pos, wait=True)
         self.motor.wait()
-        self.motor.GoTo(self.tefo_conf['tefo']['home'], wait=True)
+        self.motor.GoTo(pos, wait=True)
         self.motor.wait()
         self.motor.Float()
         #self.motor.MaxSpeed(self.tefo_conf['tefo']['speed'])
