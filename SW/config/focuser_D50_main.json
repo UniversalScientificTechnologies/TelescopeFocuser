@@ -3,7 +3,7 @@
 		"i2c":{
         	"port": 7,
         	"device": "hid",
-        	"serial": "00A59713"
+        	"serial": "00334CCE"
         },
         "bus": [
             { 

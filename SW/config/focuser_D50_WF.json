@@ -1,9 +1,8 @@
 {
 	"pymlab":{
 		"i2c":{
-                "port": 1,
         	"device": "hid",
-        	"serial_number": "553347BC"
+        	"serial": "00334E84"
         },
         "bus": [
             { 
@@ -17,6 +16,7 @@
         ]
 	},
 	"tefo":{
+                "kval": 0.4,
 		"dir": 0,
 		"lenght": 26500,
 		"home": 13250,
