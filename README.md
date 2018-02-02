@@ -12,7 +12,7 @@ Telescope focuser with position feedback - TEFO01B
  * POWERSOURCE
 
 # Dependencies
- * [PyMLAB](https://github.com/MLAB-project/pymlab)
+ * [PyMLAB](https://github.com/MLAB-project/pymlab) with [HIDAPI](https://github.com/trezor/cython-hidapi)
  * [Axis class](https://github.com/MLAB-project/axis)
 
 # UDP messages
