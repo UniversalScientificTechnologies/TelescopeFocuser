@@ -33,7 +33,6 @@ class focuser():
         self.sock.bind((tefo_conf['connection']['ip'], tefo_conf['connection']['port']))
         self.sock.setblocking(0)
 
-
         cfg.initialize()
         spi = cfg.get_device("spi")
         self.sensor = cfg.get_device("encoder")
@@ -50,8 +49,8 @@ class focuser():
         self.motor.MaxSpeed(tefo_conf['tefo']['speed'])
         #self.motor.MoveWait(-1000)
         self.motor.Float()
-        print self.sensor.get_angle(verify = False)
-        print self.motor.GetStatus()
+        #print self.sensor.get_angle(verify = False)
+        #print self.motor.getStatus()
 
         self.calib()
 
@@ -63,7 +62,7 @@ class focuser():
             #sys.stdout.write("RPS01A Angle: " + str(self.sensor.get_angle(verify = True)) + "\t\tMagnitude: " + str(self.sensor.get_magnitude()) 
             #    + "\tAGC Value: " + str(self.sensor.get_agc_value()) + "\tDiagnostics: " + str(self.sensor.get_diagnostics()) + "\r\n")
             #sys.stdout.flush()
-            print self.motor.getStatus()
+            #print self.motor.getStatus()
             try:
 
                 data = None
@@ -74,21 +73,33 @@ class focuser():
 
             if data:
                 miss = self.is_misscalibrated()
-                if data[:2] == 'H' :
+                ip, port = addr
+                self.sock.sendto("recieve;%s;%s;\n\r" %(data.strip(), ip), addr)
+                #
+                #   'H' parameter - Home position defied in json file
+                #
+                if data[0] == 'H' :
                     self.motor.GoTo(self.tefo_conf['tefo']['home'], wait=True)
+                    self.target = self.tefo_conf['tefo']['home']
                     self.motor.wait()
                     self.sock.sendto("Home; Miss:%s\n\r" %(miss), addr)
                     self.last_pos = self.sensor.get_angle(verify = False)
                     self.motor.Float()
                 
+                #
+                #   'CMxxxx' parameter - calib and move to position in promile (0-1000)
+                #
                 elif 'CM' in data:
                     target = float(data[2:])
                     if target > 1000: target = 1000
                     if target < 10: target = 10
                     self.calib(target)
                     self.target = target
-                    self.sock.sendto("CalibMove; Miss:%s\n\r" %(miss), addr)
+                    self.sock.sendto("CalibMove;Miss:%s;\n\r" %(miss), addr)
 
+                #
+                #   'Mxxxx' parameter - Move to position in promile(0-1000)
+                #
                 elif data[0] == 'M':
                     target = float(data[1:])
                     if target > 1000: target = 1000
@@ -97,7 +108,7 @@ class focuser():
                     move = int(tefo_conf['tefo']['lenght']*target/1000)
                     self.motor.GoTo(move, wait=True)
                     self.motor.wait()
-                    self.sock.sendto("Move;Miss:%s\n\r" %(miss), addr)
+                    self.sock.sendto("Move;Miss:%s;\n\r" %(miss), addr)
                     self.last_pos = self.sensor.get_angle(verify = False)
                     self.motor.Float()
 
@@ -106,7 +117,7 @@ class focuser():
 
                 elif data[0] == 'S':
                     miss = self.is_misscalibrated()
-                    self.sock.sendto("%s;%s\n\r" %(miss, self.target), addr)
+                    self.sock.sendto("%s;%s;\n\r" %(miss, self.target), addr)
                 else:
                     print "neznamy prikaz"
 
@@ -123,29 +134,27 @@ class focuser():
 
 
     def calib(self, pos = None):
+        #pokud je software nove zapnuty (nebo neni definovany 'pos'), tak se chci vycentrovat. Jinak se navratit na 'pos' argument
         print "Zacatek kalibrace"
-        #self.motor.MoveWait(-1000)
         if not pos:
             pos = self.tefo_conf['tefo']['home']
-            #pos = int(tefo_conf['tefo']['lenght']*target/1000)
         else:
             self.target = int(pos)
             pos = int(self.tefo_conf['tefo']['lenght']*pos/1000)
+        print self.motor.getStatus()
         self.motor.MaxSpeed(self.tefo_conf['tefo']['home_speed'])
-        self.motor.MoveWait(pos*-0.1)
+        #self.motor.MoveWait(pos*-0.1)
         self.motor.MoveWait(pos*2)
         time.sleep(0.5)
         self.motor.Float()
         self.motor.ResetPos()
         self.motor.MaxSpeed(self.tefo_conf['tefo']['speed'])
-        #self.target = self.tefo_conf['tefo']['home']/self.tefo_conf['tefo']['lenght']*1000
-        #self.target = pos
-        self.motor.GoTo(pos, wait=True)
-        self.motor.wait()
+
         self.motor.GoTo(pos, wait=True)
         self.motor.wait()
         self.motor.Float()
-        #self.motor.MaxSpeed(self.tefo_conf['tefo']['speed'])
+
+        self.target = int(self.tefo_conf['tefo']['home']/self.tefo_conf['tefo']['lenght']*1000)
         self.last_pos = self.sensor.get_angle(verify = True)
         print "konec kalibrace", self.last_pos
 

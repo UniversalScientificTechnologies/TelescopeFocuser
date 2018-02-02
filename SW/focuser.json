@@ -1,9 +1,9 @@
 {
 	"pymlab":{
 		"i2c":{
-            "port": 1,
+            "port": 9,
         	"device": "hid",
-        	"serial_number": "003347BC"
+        	"serial": "003347BC"
         },
         "bus": [
             { 
@@ -18,9 +18,12 @@
 	},
 	"tefo":{
 		"dir": 0,
-		"lenght": 26500,
-		"home": 13250,
-		"speed": 200
+		"lenght": 3300,
+		"home": 1650,
+		"speed": 100,
+		"_lenght": 26500,
+		"_home": 13250,
+		"home_speed": 20 
 	},
 	"connection":{
 		"ip": "127.0.0.1",
