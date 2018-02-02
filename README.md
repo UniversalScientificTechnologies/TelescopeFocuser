@@ -24,6 +24,8 @@ Telescope focuser with position feedback - TEFO01B
 
 After every succesful recieve of message, inmediately command is confirmed with ```ACK;<command>;<senders_ip>;```
 
+## Connection
+```nc -u localhost <port>```
 
 # Configuration
 Configuration is done by config [.json]() file.
