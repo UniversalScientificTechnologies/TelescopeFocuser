@@ -133,6 +133,8 @@ class focuser():
                     self.sock.sendto("%s;%s;\n\r" %(miss, self.target), addr)
                 else:
                     print "neznamy prikaz"
+            else:
+                time.sleep(0.2)
 
         self.motor.Float()
     
