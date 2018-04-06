@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 #import logging
-#logging.basicConfig(level=logging.DEBUG) 
+#logging.basicConfig(level=logging.DEBUG)
 
 import sys
 import time
@@ -21,7 +21,7 @@ class focuser():
 
         print "Using config file:", config_file
 
-        with open(config_file) as data_file:    
+        with open(config_file) as data_file:
             self.tefo_conf = json.load(data_file)
         tefo_conf = self.tefo_conf
 
@@ -39,7 +39,7 @@ class focuser():
 
 
         #print self.sensor.get_address()
-        #print self.sensor.get_zero_position() 
+        #print self.sensor.get_zero_position()
 
         spi.SPI_config(spi.I2CSPI_MSB_FIRST| spi.I2CSPI_MODE_CLK_IDLE_HIGH_DATA_EDGE_TRAILING| spi.I2CSPI_CLK_461kHz)
 
@@ -72,7 +72,7 @@ class focuser():
         while True:
             #print self.sensor.get_angle(verify = True)
 
-            #sys.stdout.write("RPS01A Angle: " + str(self.sensor.get_angle(verify = True)) + "\t\tMagnitude: " + str(self.sensor.get_magnitude()) 
+            #sys.stdout.write("RPS01A Angle: " + str(self.sensor.get_angle(verify = True)) + "\t\tMagnitude: " + str(self.sensor.get_magnitude())
             #    + "\tAGC Value: " + str(self.sensor.get_agc_value()) + "\tDiagnostics: " + str(self.sensor.get_diagnostics()) + "\r\n")
             #sys.stdout.flush()
             #print self.motor.getStatus()
@@ -98,7 +98,7 @@ class focuser():
                     self.sock.sendto("Home;%s;\n\r" %(miss), addr)
                     self.last_pos = self.sensor.get_angle(verify = False)
                     self.motor.Float()
-                
+
                 #
                 #   'CMxxxx' parameter - calib and move to position in promile (0-1000)
                 #
@@ -137,7 +137,7 @@ class focuser():
                 time.sleep(0.2)
 
         self.motor.Float()
-    
+
     def is_misscalibrated(self):
         print self.last_pos
         #print self.sensor.get_angle(verify = False)
@@ -148,10 +148,18 @@ class focuser():
         else:
             return diff
 
+    def fancy_calib(self):
+        print("Zacatek kalibrace")
+
+        if not self.motor.getStatus()['SW_F']:
+            (a,b) = self.motor.validate_switch()
+
+        
+
 
     def calib(self, pos = None):
         #pokud je software nove zapnuty (nebo neni definovany 'pos'), tak se chci vycentrovat. Jinak se navratit na 'pos' argument
-        print "Zacatek kalibrace"
+        print("Zacatek kalibrace")
         if not pos:
             pos = self.tefo_conf['tefo']['home']
             print("position obtained from cfg", pos)
@@ -176,7 +184,7 @@ class focuser():
         self.target = int(self.tefo_conf['tefo']['home']/self.tefo_conf['tefo']['lenght']*1000)
         self.last_pos = 0
         #self.last_pos = self.sensor.get_angle(verify = True)
-        print "konec kalibrace", self.last_pos
+        print("konec kalibrace", self.last_pos)
 
 
 
