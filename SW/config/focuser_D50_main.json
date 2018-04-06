@@ -24,12 +24,16 @@
         "GPIO_pins": [0, 1],
         "dir": 0,
         "kval": 0.30,
-        "lenght": 2000000,
-        "home": 120000,
-        "speed": 400,
+        "lenght": 200000,
+        "_lenght": 2000000,
+        "home": 200,
+        "speed": 420,
+        "release_speed": 500,
         "_lenght": 26500,
         "_home": 13250,
-        "home_speed": 200 
+        "home_speed": 200,
+        "release": 50000,
+        "calib_release": 50000
     },
     "connection":{
         "ip": "127.0.0.1",

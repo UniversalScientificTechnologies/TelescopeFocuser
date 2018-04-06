@@ -82,9 +82,9 @@ class focuser():
         print ("Stavy tracitek", a, b)
 
         if b:
-            self.motor.Move(1000, 1, 0)
+            self.motor.Move(tefo_conf['tefo'].get('release', 1000), 1, 0)
         if a:
-            self.motor.Move(1000, 0, 0)
+            self.motor.Move(tefo_conf['tefo'].get('release', 1000), 0, 0)
 
         self.motor.Wait()
 
@@ -134,8 +134,8 @@ class focuser():
                 #
                 elif 'CM' in data:
                     target = float(data[2:])
-                    if target > 1000: target = 1000
-                    if target < 10: target = 10
+                    if target > 995: target = 995
+                    if target < 15: target = 15
                     self.calib(target)
                     self.target = target
                     self.sock.sendto("CalibMove;%s;\n\r" %(miss), addr)
@@ -145,8 +145,8 @@ class focuser():
                 #
                 elif data[0] == 'M':
                     target = float(data[1:])
-                    if target > 1000: target = 1000
-                    if target < 10: target = 10
+                    if target > 995: target = 995
+                    if target < 15: target = 15
                     self.target = target
                     move = int(tefo_conf['tefo']['lenght']*target/1000)
                     self.motor.GoTo(move, wait=True)
@@ -161,7 +161,8 @@ class focuser():
                 elif data[0] == 'S':
                     miss = self.is_misscalibrated()
                     (a,b) = self.motor.validate_switch(usbi2c, gpio_pins)
-                    self.sock.sendto("%s;%s;%s;%s;\n\r" %(miss, self.target, int(a), int(b)), addr)
+                    position = self.motor.getPosition()
+                    self.sock.sendto("%s;%s;%s;%s;%s;\n\r" %(miss, self.target, int(a), int(b), str(position)), addr)
                 else:
                     print("neznamy prikaz")
             else:
@@ -191,31 +192,64 @@ class focuser():
     def calib(self, pos = None):
         #pokud je software nove zapnuty (nebo neni definovany 'pos'), tak se chci vycentrovat. Jinak se navratit na 'pos' argument
         print("Zacatek kalibrace")
+        '''
         if not pos:
-            pos = self.tefo_conf['tefo']['home']
+            #pos = self.tefo_conf['tefo']['home']
+            pos = self.tefo_conf['tefo']['lenght']
             print("position obtained from cfg", pos)
         else:
             self.target = int(pos)
             #pos = int(self.tefo_conf['tefo']['lenght']*pos/1000)
-            pos = int(self.tefo_conf['tefo']['lenght'])
+            pos = int(self.tefo_conf['tefo']['lenght']/2)
+        '''
+        
+        pos = self.tefo_conf['tefo']['lenght']
         print self.motor.getStatus()
         self.motor.MaxSpeed(self.tefo_conf['tefo']['home_speed'])
-        #self.motor.MoveWait(pos*-0.1)
-        print("Centrovani", pos)
-        self.motor.MoveWait(pos)
+
+        print("Pohyb Move o", pos)
+        self.motor.Move(pos)
+        self.motor.Wait()
+
+        ## TADdy JE Prvni NARAZ DO KONCAKU
         print('Move na koncak dokoncen')
+
         time.sleep(0.5)
+
+        move = int(self.tefo_conf['tefo']['lenght']*self.tefo_conf['tefo']['home']/1000)
+
+
         self.motor.Float()
         self.motor.ResetPos()
-        self.motor.MaxSpeed(self.tefo_conf['tefo']['speed'])
+        #self.motor.MaxSpeed(self.tefo_conf['tefo']['speed'])
 
-        self.motor.GoTo(pos, wait=True)
+        self.motor.MaxSpeed(100)
+        #self.motor.MinSpeed(self.tefo_conf['tefo'].get('release_speed', 200), LSPD_OPT = False)
+
+        #self.motor.ReleaseSW(True)
+        #print("cekam na uvolneni")
+        #self.motor.Wait()
+        #print('tlacitko uvolneno')
+        #time.sleep(0.5)
+        #self.motor.ResetPos()
+        print(self.motor.getStatus())
+
+        #sys.exit(0)
+
+        print("Pohyb na polohu", self.tefo_conf['tefo']['home'])
+        self.motor.GoTo(move, wait=True)
         self.motor.Wait()
+        time.sleep(0.5)
+        self.motor.MaxSpeed(self.tefo_conf['tefo']['home_speed'])
+        self.motor.GoTo(move, wait=True)
         self.motor.Float()
 
-        self.target = int(self.tefo_conf['tefo']['home']/self.tefo_conf['tefo']['lenght']*1000)
+        self.target = int(self.tefo_conf['tefo']['home'])
         self.last_pos = 0
         #self.last_pos = self.sensor.get_angle(verify = True)
+
+        #self.motor.MinSpeed(20)
+        self.motor.MaxSpeed(self.tefo_conf['tefo']['speed'])
         print("konec kalibrace", self.last_pos)
 
 
