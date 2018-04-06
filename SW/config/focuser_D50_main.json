@@ -1,9 +1,9 @@
 {
-	"pymlab":{
-		"i2c":{
-        	"port": 7,
-        	"device": "hid",
-        	"serial": "00334CCE"
+    "pymlab":{
+        "i2c":{
+            "device": "hid",
+            "serial": "00334CCE",
+            "led": false
         },
         "bus": [
             { 
@@ -13,21 +13,26 @@
             {
             "name": "encoder",
             "type": "rps01"
+            },
+            {
+            "name": "gpio",
+            "type": "USBI2C_gpio"
             }
         ]
-	},
-	"tefo":{
-		"dir": 0,
-		"kval": 0.30,
-		"lenght": 240000,
-		"home": 120000,
-		"speed": 400,
-		"_lenght": 26500,
-		"_home": 13250,
-		"home_speed": 200 
-	},
-	"connection":{
-		"ip": "127.0.0.1",
-		"port": 5001
-	}
+    },
+    "tefo":{
+        "GPIO_pins": [0, 1],
+        "dir": 0,
+        "kval": 0.30,
+        "lenght": 2000000,
+        "home": 120000,
+        "speed": 400,
+        "_lenght": 26500,
+        "_home": 13250,
+        "home_speed": 200 
+    },
+    "connection":{
+        "ip": "127.0.0.1",
+        "port": 5001
+    }
 }
