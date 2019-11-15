@@ -38,20 +38,18 @@ class focuser():
         usbi2c = cfg.get_device("gpio")
         ##self.sensor = cfg.get_device("encoder")
 
-                
         usbi2c.setup(0, usbi2c.OUT, usbi2c.PUSH_PULL)
         usbi2c.setup(1, usbi2c.OUT, usbi2c.PUSH_PULL)
         usbi2c.output(0, 0)
         usbi2c.output(1, 0)
 
-
         spi.SPI_config(spi.I2CSPI_MSB_FIRST| spi.I2CSPI_MODE_CLK_IDLE_HIGH_DATA_EDGE_TRAILING| spi.I2CSPI_CLK_461kHz)
-
         self.motor = axis.axis_between(SPI = spi, SPI_CS = spi.I2CSPI_SS0, StepsPerUnit=1)
         #self.motor.Reset(KVAL_RUN = 0x29, KVAL_ACC = 0x39, KVAL_DEC = 0x39, FS_SPD = 0xFFFFFF)
 
 
         # Transition to newer axis class
+        time.sleep(0.5)
         kvals = tefo_conf['tefo']['kval']
         self.motor.Setup(MAX_SPEED = tefo_conf['tefo']['speed'],
                        KVAL_ACC=kvals,
@@ -62,7 +60,7 @@ class focuser():
                        FS_SPD=3000,
                        STEP_MODE = axis.axis.STEP_MODE_1_16)
 
-
+        time.sleep(0.5)
         self.motor.MaxSpeed(tefo_conf['tefo']['speed'])
         #self.motor.MoveWait(-1000)
         self.motor.Float()
@@ -79,7 +77,7 @@ class focuser():
 
 
         (a,b) = self.motor.validate_switch(usbi2c, gpio_pins)
-        print ("Stavy tracitek", a, b)
+        print ("Stavy tlacitek", a, b)
 
         if b:
             self.motor.Move(tefo_conf['tefo'].get('release', 1000), 1, 0)
@@ -89,7 +87,7 @@ class focuser():
         self.motor.Wait()
 
         (a,b) = self.motor.validate_switch(usbi2c, gpio_pins)
-        print ("Stavy tracitek", a, b)
+        print ("Stavy tlacitek", a, b)
 
         if self.motor.getStatus()['SW_F']:
             return("Je zmacknute tlacitku, ukoncuji")
