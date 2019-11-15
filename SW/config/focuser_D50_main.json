@@ -6,8 +6,8 @@
             "led": false
         },
         "bus": [
-            { 
-            "name":"spi", 
+            {
+            "name":"spi",
             "type":"i2cspi"
             },
             {
@@ -24,7 +24,7 @@
         "GPIO_pins": [0, 1],
         "dir": 0,
         "kval": 0.30,
-        "lenght": 200000,
+        "lenght": 240000,
         "_lenght": 2000000,
         "home": 200,
         "speed": 420,
@@ -33,7 +33,8 @@
         "_home": 13250,
         "home_speed": 200,
         "release": 50000,
-        "calib_release": 50000
+        "calib_release": 50000,
+        "calib": true
     },
     "connection":{
         "ip": "127.0.0.1",

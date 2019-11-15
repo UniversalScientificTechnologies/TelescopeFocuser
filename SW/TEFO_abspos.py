@@ -95,7 +95,8 @@ class focuser():
             return("Je zmacknute tlacitku, ukoncuji")
             sys.exit(0)
 
-        self.calib()
+        if self.tefo_conf['tefo'].get("calib", True):
+            self.calib()
 
         data = None
 
@@ -134,7 +135,7 @@ class focuser():
                 #
                 elif 'CM' in data:
                     target = float(data[2:])
-                    if target > 995: target = 995
+                    if target > 1000: target = 1000
                     if target < 15: target = 15
                     self.calib(target)
                     self.target = target
@@ -145,7 +146,7 @@ class focuser():
                 #
                 elif data[0] == 'M':
                     target = float(data[1:])
-                    if target > 995: target = 995
+                    if target > 1000: target = 1000
                     if target < 15: target = 15
                     self.target = target
                     move = int(tefo_conf['tefo']['lenght']*target/1000)
