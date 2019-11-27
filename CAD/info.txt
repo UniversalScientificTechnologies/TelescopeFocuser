@@ -11,3 +11,9 @@ TEFO01A_BOX02A_I2C
 TEFO01A_BOX02A_RS232
 -box vycházející z BASEBOX01A
 -určen pro druhou část ve variantě s RS232. Obsahuje moduly R232SINGLE01A, I2C232V01A, UNIPOWER02A, MIC338 (konektor)
+
+Boxy pro TEFO01C
+
+TEFO01C_BOX01A
+-box vycházející z BASEBOX02A
+-určen pro TEFO01C - HBSTEP01B, I2CSPI01A, UNIPOWER02A, USBI2C01A a konektor MIC338 pro připojení motoru.
