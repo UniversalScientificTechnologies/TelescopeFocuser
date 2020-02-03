@@ -1,0 +1,38 @@
+{
+  "pymlab":{
+    "i2c":{
+          "device": "hid",
+          "serial": "003347BC",
+          "led": False
+        },
+        "bus": [
+            {
+            "name":"spi",
+            "type":"i2cspi"
+            },
+            {
+            "name": "encoder",
+            "type": "rps01"
+            },
+            {
+            "name": "encoder",
+            "type": "rps01"
+            }
+        ]
+    },
+    "tefo":{
+        "GPIO_pins": [0, 1],
+        "_GPIO_pins": "Prvni koncak je ten, na ktery se to homeuje",
+        "dir": 0,
+        "lenght": 3300,
+        "home": 1650,
+        "speed": 100,
+        "_lenght": 26500,
+        "_home": 13250,
+        "home_speed": 20
+      },
+      "connection":{
+        "ip": "127.0.0.1",
+        "port": 5000
+      }
+}
