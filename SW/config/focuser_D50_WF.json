@@ -6,8 +6,8 @@
             "led": false
         },
         "bus": [
-            { 
-            "name":"spi", 
+            {
+            "name":"spi",
             "type":"i2cspi"
             },
             {
@@ -23,13 +23,14 @@
     "tefo":{
         "GPIO_pins": [0, 1],
         "kval": 0.4,
-        "dir": 0,
-        "lenght": 41500,
-        "home": 500,
-        "speed": 200,
+        "dir": 1,
+        "lenght": 20000,
+        "home": 330,
+        "speed": 100,
         "home_speed": 100,
         "release": 1000,
-        "calib_release": 0
+        "release_speed": 200,
+        "calib_release": 100
     },
     "connection":{
         "ip": "127.0.0.1",

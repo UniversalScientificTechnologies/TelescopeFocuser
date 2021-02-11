@@ -11,29 +11,23 @@
             "type":"i2cspi"
             },
             {
-            "name": "encoder",
-            "type": "rps01"
-            },
-            {
             "name": "gpio",
             "type": "USBI2C_gpio"
             }
         ]
     },
     "tefo":{
+        "TEFO_type": "single",
         "GPIO_pins": [0, 1],
-        "dir": 0,
-        "kval": 0.30,
-        "lenght": 240000,
-        "_lenght": 2000000,
-        "home": 200,
-        "speed": 420,
-        "release_speed": 500,
-        "_lenght": 26500,
-        "_home": 13250,
-        "home_speed": 200,
-        "release": 50000,
-        "calib_release": 50000,
+        "dir": 1,
+        "kval": 0.9,
+        "lenght": 100000,
+        "home": 240,
+        "speed": 120,
+        "release_speed": 70,
+        "home_speed": 60,
+        "release": 1000,
+        "calib_release": 100,
         "calib": true
     },
     "connection":{
