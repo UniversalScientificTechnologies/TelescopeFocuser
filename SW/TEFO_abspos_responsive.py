@@ -87,10 +87,10 @@ class focuser():
 
         def_dir = False
         self.gpio_pins = [0,1]
-        data = {
-            'dirToHome': def_dir,
-            'self.gpio_pins': self.gpio_pins
-            }
+        #data = {
+        #    'dirToHome': def_dir,
+        #    'self.gpio_pins': self.gpio_pins
+        #    }
 
         #self.motor.search_range(False, self.usbi2c, self.gpio_pins)
         #sys.exit(0)
@@ -120,7 +120,7 @@ class focuser():
                 self.motor.ReleaseSW(direction=self.dirToHome, ACT=False)
             if self.motor_wait_stop (timeout=60, message="ERROR: timeout while attempting to get into the operational range"):
                 sys.exit(1)
-			print("releaseSW should be finished")
+            print("releaseSW should be finished")
 
             time.sleep(0.2)
             self.motor.MaxSpeed(self.tefo_conf['tefo']['release_speed'])
@@ -128,10 +128,10 @@ class focuser():
 
             # We move a bit farther to get from a "greyzone" where the endswitch could flutter...
             # The fluttering of the endswitch (common especially for IR sensors) can interrupt 
-			# this process, so we may need to run it repeatedly.
+            # this process, so we may need to run it repeatedly.
             attempt = 0
             while True:
-				print("inicialization release, Move attempt: ", attempt)
+                print("inicialization release, Move attempt: ", attempt)
                 self.motor.Move(tefo_conf['tefo'].get('release', 1000), self.direction, False, 'steps')
                 if self.motor_wait_stop (timeout=10, message="timeout Move"):
                     sys.exit(1)
@@ -168,16 +168,16 @@ class focuser():
 
         while True:
             #print("while run...")
-            #print self.sensor.get_angle(verify=True)
+            #print(self.sensor.get_angle(verify=True))
 
             #sys.stdout.write("RPS01A Angle: " + str(self.sensor.get_angle(verify=True)) + "\t\tMagnitude: " + str(self.sensor.get_magnitude())
             #    + "\tAGC Value: " + str(self.sensor.get_agc_value()) + "\tDiagnostics: " + str(self.sensor.get_diagnostics()) + "\r\n")
             #sys.stdout.flush()
-            #print self.motor.getStatus()
+            #print(self.motor.getStatus())
 
             # The select is used very minimalistically here, practically it's an equivalent of
-			# a simple "sleep" method with an advantage of a prompt reaction to an incoming 
-			# message.
+            # a simple "sleep" method with an advantage of a prompt reaction to an incoming 
+            # message.
             inputready,outputready,exceptready = select.select([self.sock],[],[],0.2)
 
             try:
@@ -190,9 +190,10 @@ class focuser():
             if data:
                 try:
                     command = None
-                    command_id, command = data.split(' ')
+                    command_id, command = data.decode().split(' ')
                     print("split result:", command_id, command)
                 except Exception as e:
+                    print("split exception:", e)
                     pass
 
             if command:
@@ -283,7 +284,8 @@ class focuser():
                 else:
                     time_to_moveend = 0.0
 
-                self.sock.sendto("%s %s %s %s %s %s %s %s\n" %(command_id, command.rstrip(), request_status, motor_status, str(self.lastaction_result), str(position), str(self.last_set_position), str(time_to_moveend)), addr)
+                message = "%s %s %s %s %s %s %s %s\n" %(command_id, command.rstrip(), request_status, motor_status, str(self.lastaction_result), str(position), str(self.last_set_position), str(time_to_moveend))
+                self.sock.sendto(message.encode(), addr)
 
                 self.last_command_id = command_id
                 command = None
@@ -319,7 +321,7 @@ class focuser():
 
 #    def is_misscalibrated(self):
 #        print(self.last_pos)
-#        #print self.sensor.get_angle(verify=False)
+#        #print(self.sensor.get_angle(verify=False))
 #        diff = 0
 #        #diff = abs(float(self.last_pos) - self.sensor.get_angle(verify=False))
 #        if diff < 5:
@@ -509,7 +511,7 @@ class focuser():
         self.motor.Wait(maximal_time=timeout, print_pos=False)
         if self.motor.IsBusy ():
             self.motor.SoftStop ()
-            print (message)
+            print(message)
             time.sleep(0.5)
             self.motor.Float()
             return 1

@@ -145,16 +145,17 @@ class focuser():
         data = None
 
         while True:
-            #print self.sensor.get_angle(verify=True)
+            #print(self.sensor.get_angle(verify=True))
 
             #sys.stdout.write("RPS01A Angle: " + str(self.sensor.get_angle(verify=True)) + "\t\tMagnitude: " + str(self.sensor.get_magnitude())
             #    + "\tAGC Value: " + str(self.sensor.get_agc_value()) + "\tDiagnostics: " + str(self.sensor.get_diagnostics()) + "\r\n")
             #sys.stdout.flush()
-            #print self.motor.getStatus()
+            #print(self.motor.getStatus())
             try:
 
                 data = None
                 data, addr = self.sock.recvfrom(1024)
+                data = data.decode()
                 print("received message:", data, addr)
             except Exception as e:
                 pass
@@ -162,7 +163,8 @@ class focuser():
             if data:
                 miss = self.is_misscalibrated()
                 ip, port = addr
-                self.sock.sendto("ACK;%s;%s;\n\r" %(data.strip(), ip), addr)
+                message = "ACK;%s;%s;\n\r" %(data.strip(), ip)
+                self.sock.sendto(message.encode(), addr)
                 #
                 #   'H' parameter - Home position defined in json file
                 #
@@ -173,7 +175,8 @@ class focuser():
                     self.motor.GoTo(move)
                     self.motor_wait_stop(timeout=30, message="timeout GoTo")
                     self.target = self.tefo_conf['tefo']['home']
-                    self.sock.sendto("Home;%s;\n\r" %(miss), addr)
+                    message = "Home;%s;\n\r" %(miss)
+                    self.sock.sendto(message.encode(), addr)
                     #self.last_pos = self.sensor.get_angle(verify=False)
                     self.motor.Float()
 
@@ -185,7 +188,8 @@ class focuser():
                     if target > 1000: target = 1000
                     if target < 1: target = 1
                     self.calib(target)
-                    self.sock.sendto("CalibMove;%s;\n\r" %(miss), addr)
+                    message = "CalibMove;%s;\n\r" %(miss)
+                    self.sock.sendto(message.encode(), addr)
 
                 #
                 #   'Mxxxx' parameter - Move to position in promile(0-1000)
@@ -200,7 +204,8 @@ class focuser():
                         move = -move
                     self.motor.GoTo(move)
                     self.motor_wait_stop(timeout=60, message="timeout GoTo")
-                    self.sock.sendto("Move;%s;\n\r" %(miss), addr)
+                    message = "Move;%s;\n\r" %(miss)
+                    self.sock.sendto(message.encode(), addr)
                     ##self.last_pos = self.sensor.get_angle(verify = False)
                     self.motor.Float()
 
@@ -211,7 +216,8 @@ class focuser():
                     miss = self.is_misscalibrated()
                     (a,b) = self.motor.validate_switch(self.usbi2c, self.gpio_pins)
                     position = self.motor.getPosition()
-                    self.sock.sendto("%s;%s;%s;%s;%s;\n\r" %(miss, self.target, int(a), int(b), str(position)), addr)
+                    message = "%s;%s;%s;%s;%s;\n\r" %(miss, self.target, int(a), int(b), str(position))
+                    self.sock.sendto(message.encode(), addr)
 
                 elif 'STOP' in data or 'stop' in data:
                     self.motor.SoftStop()
@@ -227,7 +233,7 @@ class focuser():
 
     def is_misscalibrated(self):
         print(self.last_pos)
-        #print self.sensor.get_angle(verify=False)
+        #print(self.sensor.get_angle(verify=False))
         diff = 0
         #diff = abs(float(self.last_pos) - self.sensor.get_angle(verify=False))
         if diff < 5:
