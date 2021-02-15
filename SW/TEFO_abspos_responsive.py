@@ -191,7 +191,7 @@ class focuser():
                 try:
                     command = None
                     command_id, command = data.decode().split(' ')
-                    print("split result:", command_id, command)
+                    #print("split result:", command_id, command)
                 except Exception as e:
                     print("split exception:", e)
                     pass
@@ -376,7 +376,7 @@ class focuser():
 
 
     def calibrate_progress(self):
-        print("Calibration in progress")
+        #print("Calibration in progress")
 
         if self.action_now == "calibrate1":
             if not self.motor.IsBusy():     # i.e., this phase just ended
@@ -464,7 +464,7 @@ class focuser():
         self.last_set_position = pos
 
     def move_progress(self):
-        print(time.time(), "Move in progress...")
+        #print(time.time(), "Move in progress...")
 
         if not self.motor.IsBusy():     # i.e., the movement is finished
             print(time.time(), 'Move finished')
