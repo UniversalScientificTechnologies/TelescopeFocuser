@@ -106,3 +106,19 @@ Configuration is done by config [.json]() file.
 }
 
 ```
+
+# Installation of the systemd service
+The example systemd service files are placed in SW/systemd. To install them,
+copy them to /etc/systemd/system and edit them to meet your needs (path, 
+configurations of instances desired to run etc).
+
+To autostart the daemons after the boot use the command
+```systemctl enable mlab-tefo.target```
+To manage an individual instance of service or the whole bunch use standard
+systemctl interface, e.g.:
+```systemctl start mlab-tefo.target```
+```systemctl status mlab-tefo@focuser_D50_WF.service```
+```systemctl stop mlab-tefo@focuser_D50_main.service```
+
+The output is redirected to the journal service, you can read it using the ```journalctl``` command.
+

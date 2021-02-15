@@ -1,0 +1,7 @@
+[Unit]
+Description="MLAB's TelescopeFocusers"
+Requires=mlab-tefo@focuser_D50_main.service mlab-tefo@focuser_D50_WF.service
+
+[Install]
+WantedBy=multi-user.target
+

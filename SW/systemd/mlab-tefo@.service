@@ -1,0 +1,9 @@
+[Unit]
+Description="MLAB's TelescopeFocuser, instance #%i"
+
+[Service]
+Type=simple
+Environment=PYTHONUNBUFFERED=1
+WorkingDirectory=/opt/mlab/TelescopeFocuser/SW
+ExecStart=/usr/bin/python3 /opt/mlab/TelescopeFocuser/SW/TEFO_abspos_responsive.py config/%i.json
+
