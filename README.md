@@ -113,8 +113,11 @@ The installation is simple, just copy the files to /etc/systemd/system
 and edit them to meet your needs (path, configurations of instances desired 
 to run etc).
 
-To autostart the daemons after the boot use the command\
-```systemctl enable mlab-tefo.target```.
+To apply changes made in the definition of systemd files:\
+```systemctl daemon-reload```
+
+To autostart the daemons after the boot:\
+```systemctl enable mlab-tefo.target```
 
 To manage an individual instance of service or the whole bunch use standard
 systemctl interface, e.g.:\

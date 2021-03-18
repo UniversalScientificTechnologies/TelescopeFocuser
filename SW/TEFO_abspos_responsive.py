@@ -211,17 +211,21 @@ class focuser():
                     request_status = "accepted"
 
                 #
-                #   'C' parameter - (re)calibrate
+                #   'Mxxxx' parameter - move to position (1-1000)
                 #
-                elif command[0] == 'C':
+                elif command[0] == 'M':
                     if self.action_now is not None and "calibrate" in self.action_now:
                         request_status = "wrong"
                     else:
                         request_status = "accepted"
+                        target = int(command[1:])
+                        if target > 1000: target = 1000
+                        if target < 1: target = 1
                         if self.action_now == "stop" or self.action_now == "finished":
-                            self.action_next = "calibrate"
+                            self.last_set_position = target
+                            self.action_next = "move"
                         else:
-                            self.calibrate()
+                            self.move(target)
 
                 #
                 #   'CMxxxx' parameter - calibrate and move to position (1-1000)
@@ -241,21 +245,17 @@ class focuser():
                             self.calibrate(target)
 
                 #
-                #   'Mxxxx' parameter - move to position (1-1000)
+                #   'C' parameter - (re)calibrate
                 #
-                elif command[0] == 'M':
+                elif command[0] == 'C':
                     if self.action_now is not None and "calibrate" in self.action_now:
                         request_status = "wrong"
                     else:
                         request_status = "accepted"
-                        target = int(command[1:])
-                        if target > 1000: target = 1000
-                        if target < 1: target = 1
                         if self.action_now == "stop" or self.action_now == "finished":
-                            self.last_set_position = target
-                            self.action_next = "move"
+                            self.action_next = "calibrate"
                         else:
-                            self.move(target)
+                            self.calibrate()
 
                 elif 'STOP' in command or 'stop' in command:
                     request_status = "accepted"
@@ -265,9 +265,12 @@ class focuser():
                     print("unknown command")
                     request_status = "wrong"
 
-                position = int(self.motor.getPosition() / float(self.tefo_conf['tefo']['lenght']) * 1000.0)
+
                 if self.direction == 0:
-                    position = -position
+                    posCoef = -1.0
+                else:
+                    posCoef = 1.0
+                position = int(posCoef * self.motor.getPosition() / float(self.tefo_conf['tefo']['lenght']) * 1000.0 + 0.5)
 
                 if self.motor.IsBusy():
                     if self.action_now == "move":
