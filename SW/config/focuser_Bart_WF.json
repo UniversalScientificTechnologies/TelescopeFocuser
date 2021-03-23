@@ -23,7 +23,7 @@
     "tefo":{
         "GPIO_pins": [0, 1],
         "kval": 0.4,
-        "dir": 0,
+        "dir": 1,
         "lenght": 41500,
         "home": 280,
         "speed": 200,
